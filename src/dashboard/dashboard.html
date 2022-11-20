@@ -13,7 +13,7 @@
         <aside class="sidenav">sidenav</aside>
         <section class="content">
             <header class="border-solid border-2 px-8 py-4">
-                <nav class="flex justify-end">
+                <nav class="flex justify-end relative">
                     <button id="user-profile-btn" class="flex items-center gap-x-2 rounded-xl p-1 px-2 hover:bg-light-black">
                         <section>
                             <svg id="default-image" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 rounded-full bg-gray">
@@ -30,6 +30,9 @@
                               </i>             
                         </section>
                     </button>
+                    <ul id="profile-menu" class=" hidden absolute top-12 right-0 w-[200px] rounded-md bg-light-black p-1">
+                        <li id="logout" class="w-full cursor-pointer rounded-md p-1 hover:bg-gray">logout</li>                        
+                    </ul>
                 </nav>             
             </header>
             <section>content</section>
