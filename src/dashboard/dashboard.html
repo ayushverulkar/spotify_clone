@@ -11,8 +11,8 @@
 <body class="h-screen bg-black text-primary">
     <main class="h-full grid grid-template-areas grid-cols-[250px_1fr] grid-rows-[1fr_auto]">
         <aside class="sidenav">sidenav</aside>
-        <section class="content">
-            <header class="border-solid border-2 px-8 py-4">
+        <article class="relative content overflow-auto bg-transparent ">
+            <header class="header  px-8 py-4 bg-transparent">
                 <nav class="flex justify-end relative">
                     <button id="user-profile-btn" class="flex items-center gap-x-2 rounded-xl p-1 px-2 hover:bg-light-black">
                         <section>
@@ -35,22 +35,34 @@
                     </ul>
                 </nav>             
             </header>
-            <article class="p-4 ">
-                <h1 class="text-2xl">Featured</h1>
-                <section class="featured-songs grid grid-cols-auto-fill-cards gap-4" id="featured-playlist-items">
-                    <!-- <section  class="rounded p-4 border-solid border-2 ">
-                        <img src="https://i.scdn.co/image/ab67706f000000030b376c5227ccdccdfdc25ead" alt="" />
-                        <h2 class="text-sm">Name</h2>
-                        <h3 class="text-xs">Description</h3>
-                    </section>
-                    <section>
-                        <img src="https://i.scdn.co/image/ab67706f000000030b376c5227ccdccdfdc25ead" alt="" />
-                        <h2>Name</h2>
-                        <h3>Description</h3>
-                    </section> -->
-                </section>
+            <article id="cover-content" class="absolute content-center grid -z-[1] w-full h-72 top-0  py-4 bg-gradient-to-b from-light-black to-black-base px-4">
+                <h1 class="text-6xl">Hello User</h1>
             </article>
-        </section>
+            <section id="page-content" class=" bg-black-base mt-48">
+                <header class="px-8">
+                    <ul class="grid grid-cols-[50px_2fr_1fr_50px] gap-4 text-secondary">
+                        <li class="justify-self-center">#</li>
+                        <li>Title</li>
+                        <li>Album</li>
+                        <li>🕝</li>
+                    </ul>
+                </header>
+                <section class="px-8" id="tracks">
+                    <section class="track grid grid-cols-[50px_2fr_1fr_50px] gap-4 items-center justify-items-start text-secondary rounded-md hover:bg-light-black">
+                        <p class="justify-self-center">1</p>
+                        <section class="grid grid-cols-2 gap-2"  >
+                            <img class="h-8 w-8" src="" alt="">
+                            <article class="flex flex-col gap-1">
+                                <h2 class="text-xl text-primary">Song</h2>
+                                <p class="text-sm">Artists</p>
+                            </article>
+                        </section>
+                        <p>album</p>
+                        <p>1:45</p>
+                    </section>
+                </section>
+            </section>
+        </article>
         <footer class="now-playing">now playing</footer>
     </main>
 </body>

@@ -1,5 +1,5 @@
 import { fetchRequest } from "../api";
-import { ENDPOINT, logout } from "../common";
+import { ENDPOINT, logout, SECTIONTYPE } from "../common";
 
 
 const onProfileClick = (event)=>{
@@ -27,36 +27,107 @@ const loadeUserProfile = async()=>{
     profileButton.addEventListener("click",onProfileClick);
 
 }
-const onPlaylistItemClicked = (event)=>{
+const onPlaylistItemClicked = (event,id)=>{
     console.log(event.target);
+    const section = {type:SECTIONTYPE.PLAYLIST,playlist:id};
+    history.pushState(section,"",`playlist/${id}`);
+    loadSection(section);
 }
 
-const loadFeaturedPlaylist = async()=>{
-   const {playlists:{items}} = await fetchRequest     (ENDPOINT.featuredPlaylist);
-   const PlaylistItemsSection = document.querySelector("#featured-playlist-items");
+const loadPlaylist = async(endpoint,elementId)=>{
+   const {playlists:{items}} = await fetchRequest     (endpoint);
+   const PlaylistItemsSection = document.querySelector(`#${elementId}`);
     for(let {name,description,images,id} of items){
         const playlistItem = document.createElement("section");
-        playlistItem.className = "rounded p-4 border-solid border-2 hover:cursor-pointer";
+        playlistItem.className = "bg-black-secondary rounded p-4 hover:cursor-pointer hover:bg-light-black";
         playlistItem.id=id;
         playlistItem.setAttribute("data-type","playlist")
-        playlistItem.addEventListener("click",onPlaylistItemClicked);
+        playlistItem.addEventListener("click",(event)=>onPlaylistItemClicked(event,id));
         const [{url:imageUrl}] = images;
-        playlistItem.innerHTML = `<img src="${imageUrl}" alt="${name}" class="rounded mb-2 object-contain shadow" />               <h2 class="text-sm">${name}</h2>                                         <h3 class="text-xs">${description}</h3>`;
+        playlistItem.innerHTML = `<img src="${imageUrl}" alt="${name}" class="rounded mb-2 object-contain shadow" />               <h2 class="text-base font-semibold mb-4 truncate">${name}</h2>                                         <h3 class="text-sm text-secondary line-clamp-2">${description}</h3>`;
 
         PlaylistItemsSection.appendChild(playlistItem);
    }
 }
 
+const loadPlaylists = ()=>{
+    loadPlaylist(ENDPOINT.featuredPlaylist,"featured-playlist-items");
+    loadPlaylist(ENDPOINT.toplists,"top-playlist-items");
+
+
+}
+
+
+const fillContentForDashboard=()=>{
+    const pageContent= document.querySelector("#page-content");
+    const playlistMap = new Map([["featured","featured-playlist-items"],["top playlists","top-playlist-items"]]);
+    let innerHTML = "";
+    for(let[type,id] of playlistMap){
+        innerHTML += `            <article class="p-4 ">
+        <h1 class="text-2xl mb-4 font-bold capitalize">${type}</h1>
+        <section class="featured-songs grid grid-cols-auto-fill-cards gap-4" id="${id}">
+        </section>
+    </article>` 
+    }
+    pageContent.innerHTML = innerHTML;
+
+}
+
+
+const fillContentForPlaylist = async(playlistId)=>{
+    const playlist = await fetchRequest(`${ENDPOINT.playlist}/${playlistId}`);
+    const pageContent= document.querySelector("#page-content");
+    pageContent.innerHTML = "";
+    console.log(playlist);
+
+}
+
+
+
+const loadSection = (section)=>{
+    if(section.type===SECTIONTYPE.DASHBOARD){
+        // fillContentForDashboard();
+        // loadPlaylists();
+    }else if(section.type ===SECTIONTYPE.PLAYLIST){
+        //load element for playlist
+        fillContentForPlaylist(section.playlist);
+    }
+}
+
+
+
 
 document.addEventListener("DOMContentLoaded",()=>{
     loadeUserProfile();
-    loadFeaturedPlaylist();
+    const section = {type:SECTIONTYPE.DASHBOARD}
+    history.pushState(section,"","");
+    loadSection(section);
+    fillContentForDashboard();
     document.addEventListener("click",()=>{
         const profileMenu = document.querySelector("#profile-menu");
         if(!profileMenu.classList.contains("hidden")){
             profileMenu.classList.add("hidden");
         }
 
+    })
+
+
+
+    document.querySelector(".content").addEventListener("scroll",(event)=>{
+        const{scrollTop} = event.target;
+        const header = document.querySelector(".header");
+        if(scrollTop>=header.offsetHeight){
+            header.classList.add("sticky","top-0","bg-black-secondary");
+            header.classList.remove("bg-transparent");
+        }else{
+            header.classList.remove("sticky","top-0","bg-black-secondary");
+            header.classList.add("bg-transparent");
+        }
+    })
+
+
+    window.addEventListener("popstate",(event)=>{
+        loadSection(event.state);
     })
 })
 
