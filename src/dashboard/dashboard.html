@@ -13,7 +13,7 @@
     <main class="h-full grid grid-template-areas grid-cols-[250px_1fr] grid-rows-[1fr_auto]">
         <aside class="sidenav">sidenav</aside>
         <article class="relative content overflow-auto bg-transparent ">
-            <header class="header  px-8 py-4 bg-transparent">
+            <header class="header  px-8 py-4 bg-transparent z-10">
                 <nav class="flex justify-end relative">
                     <button id="user-profile-btn" class="flex items-center gap-x-2 rounded-xl p-1 px-2 hover:bg-light-black">
                         <section>
@@ -62,28 +62,36 @@
                         <p id="now-playing-artists" class="text-xs">song artist</p>
                     </section>                    
                 </section>
-                <section id="audio-control">
+                <section id="audio-control" class="flex items-center flex-col justify-center ">
                     <!-- section for audio control -->
                     <section class="flex items-center justify-center hover:text-primary">
-                        <button id="prev"><span class="material-symbols-outlined">
+                        <button id="prev"><span style="font-size: 48px;" class="material-symbols-outlined">
                             skip_previous
                             </span></button>
-                        <button id="play"><span class="material-symbols-outlined">
+                        <button id="play"><span style="font-size: 48px;" class="material-symbols-outlined">
                             play_circle
                             </span></button>
-                        <button id="next "><span class="material-symbols-outlined">
+                        <button id="next "><span style="font-size: 48px;" class="material-symbols-outlined">
                             skip_next
                             </span></button>
 
                     </section>
-                    <section class="w-full flex items-center justify-center p-1">
+                    <section class="w-full flex items-center justify-center gap-4 p-1">
                         <span id="song-duration-completed">0:00 </span>
-                        <section id="progress" class="h-2 w-full cursor-pointer rounded-3xl bg-secondary"></section>
+                        <section id="timeline" class="bg-secondary w-full cursor-pointer rounded-3xl">
+                            <section id="progress" class="bg-green w-0 h-2 rounded-3xl " ></section>
+
+                        </section>
+
                         <span id="total-song-duration">0:00</span>
                     </section>
                 </section>
-                <section>
-                    section for volume control
+                <section id="volume-control" class="flex items-center justify-center">
+                    
+                    <span class="material-symbols-outlined">
+                    volume_up
+                    </span>
+                    <input type="range" name="" id="volume" class="" value="100" min="0" max="100">
                 </section>
             </section>
 

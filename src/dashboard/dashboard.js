@@ -2,6 +2,16 @@ import { format } from "prettier";
 import { fetchRequest } from "../api";
 import { ENDPOINT, logout, SECTIONTYPE } from "../common";
 
+const audio = new Audio();
+const volume = document.querySelector("#volume");
+const playButton = document.querySelector("#play");
+const totalSongDuration = document.querySelector("#total-song-duration");
+const songDurationCompleted = document.querySelector("#song-duration-completed");
+const songProgress = document.querySelector("#progress");
+const timeline = document.querySelector("#timeline");
+let progressInterval;
+
+
 
 const onProfileClick = (event)=>{
     event.stopPropagation();
@@ -96,10 +106,93 @@ const onTrackSelection = (id,event)=>{
 
 }
 
+// const timeline = document.querySelector("#time");
+const updateIconsForPlayMode=(id)=>{
+    playButton.querySelector("span").textContent = "pause_circle";
+    const playButtonFromTracks =document.querySelector(`#play-track${id}`);
+    playButtonFromTracks.textContent="||";
+    playButtonFromTracks.setAttribute("data-play","true");
+}
+
+
+const onAudioMetadataLoaded = (id)=>{
+    totalSongDuration.textContent = `0:${audio.duration.toFixed(0)}`;
+    updateIconsForPlayMode(id);
+
+    // `play-track${id}`;
+
+}
+
+
+const updateIconsForPauseMode=(id)=>{
+    const playButtonFromTracks=document.querySelector(`#play-track${id}`);
+    playButton.querySelector("span").textContent = "play_circle";
+    playButtonFromTracks.textContent="▶️";
+
+}
+
+const onNowPlayinPlayButtonClicked = (id)=>{
+    if(audio.paused){
+        audio.play();
+        updateIconsForPlayMode(id);
+
+
+    }else{
+        audio.pause();
+        updateIconsForPauseMode(id);
+
+
+    }
+
+}
+
+
 
 const onPlayTrack = (event,{image,artistNames,name,duration,previewUrl,id})=>{
-    console.log(image,artistNames,name,duration,previewUrl,id);
+    const buttonWithDataPlay = document.querySelector(`[data-play="true"]`);
+    const button=event.target;
+    if(buttonWithDataPlay?.id===`play-track${id}`){
+        if(audio.paused){
+            audio.play();
+            updateIconsForPlayMode(id);
 
+        }else{
+            audio.pause();
+            updateIconsForPauseMode(id);
+
+        }
+    }else{   
+        buttonWithDataPlay?.setAttribute("data-play","false");
+        console.log(image,artistNames,name,duration,previewUrl,id);
+
+
+
+        const NowPlayingSongImage = document.querySelector("#now-playing-image");
+        NowPlayingSongImage.src=image.url;
+        const songTitle  = document.querySelector("#now-playing-song");
+        const artists = document.querySelector("#now-playing-artists");
+
+        songTitle.textContent= name;
+        artists.textContent=artistNames;
+
+
+        audio.src=previewUrl;
+        audio.removeEventListener("loadedmetadata",()=>onAudioMetadataLoaded(id));
+        audio.addEventListener("loadedmetadata",()=> onAudioMetadataLoaded(id));
+        playButton.addEventListener("click",()=>onNowPlayinPlayButtonClicked(id))
+        audio.play();
+        clearInterval(progressInterval);
+        // timeline.addEventListener("click")
+        progressInterval =setInterval(()=>{
+            if (audio.paused){
+                return
+            }
+            songDurationCompleted.textContent = `${audio.currentTime.toFixed(0)<10? "0:0"+ audio.currentTime.toFixed(0) : "0:"+audio.currentTime.toFixed(0)}`;
+            songProgress.style.width=`${(audio.currentTime/audio.duration)*100}%`;
+        },100)
+        
+
+    }
 }
 
 const loadPlaylistTracks = ({tracks})=>{
@@ -107,7 +200,6 @@ const loadPlaylistTracks = ({tracks})=>{
     let trackNo = 1;
     for(let trackItem of tracks.items){
         let{id,artists,name,album,duration_ms:duration, preview_url:previewUrl} = trackItem.track;
-        console.log(trackItem.track);
         let track = document.createElement("section");
         track.id=id;
 
@@ -148,7 +240,7 @@ const fillContentForPlaylist = async(playlistId)=>{
     const playlist = await fetchRequest(`${ENDPOINT.playlist}/${playlistId}`);
     const pageContent= document.querySelector("#page-content");
     pageContent.innerHTML = `
-    <header id="playlist-header" class="mx-8 py-4 border-secondary border-b-[0.5px]">
+    <header id="playlist-header" class="mx-8 py-4 border-secondary border-b-[0.5px] z-10">
         <nav class = "py-2">
             <ul class="grid grid-cols-[50px_1fr_1fr_50px] gap-4 text-secondary py-4">
                 <li class="justify-self-center">#</li>
@@ -199,7 +291,7 @@ const onContentScroll = (event)=>{
         header.classList.add("bg-transparent");
     }
     if(history.state.type===SECTIONTYPE.PLAYLIST){
-    const coverElement = document.querySelector("cover-content");
+    const coverElement = document.querySelector("#cover-content");
     const playlistHeader = document.querySelector("#playlist-header");
     if(scrollTop>=(coverElement.offsetHeight - header.offsetHeight)){
         playlistHeader.classList.add("sticky","bg-black-secondary","px-8");
